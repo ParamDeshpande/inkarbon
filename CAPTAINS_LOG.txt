@@ -1,0 +1,4 @@
+13/1/19
+10.37 PM
+Reseached and finalised one component (air quality sensor). Added/ init this git repo.
+
