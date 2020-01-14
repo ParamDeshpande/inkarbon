@@ -1,4 +1,7 @@
-13/1/19
+13/1/20
 10.37 PM
 Reseached and finalised one component (air quality sensor). Added/ init this git repo.
 
+14/01/20
+9.58 PM
+finalised components for differential air sensor and boost converter(for the MVP awaiting expert criticism).
