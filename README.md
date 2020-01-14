@@ -13,6 +13,6 @@
 
 ### Timeline 
 
-Get components by Jan end / Feb. 
-TEST/build the MVP by 10th FEB, hopefully Ti's component (only the board) will be shipped by then.
-Spend 10 days working on the final thing. ... 
+* Get components by Jan end / Feb. 
+* TEST/build the MVP by 10th FEB, hopefully Ti's component (only the board) will be shipped by then.
+* Spend 10 days working on the final thing. ... 
