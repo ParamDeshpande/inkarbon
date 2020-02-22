@@ -5,3 +5,7 @@ Reseached and finalised one component (air quality sensor). Added/ init this git
 14/01/20
 9.58 PM
 finalised components for differential air sensor and boost converter(for the MVP awaiting expert criticism).
+
+22/02/20
+7.48 PM 
+Added code for IOT part, ref only.
