@@ -1,0 +1,193 @@
+#include "C:\ti\msp\MSP432Ware_3_50_00_02\driverlib\driverlib\MSP432P4xx/driverlib.h"
+#include <WiFi.h>
+#include <SPI.h>
+#include <PubSubClient.h>
+#include <aJSON.h>
+
+IPAddress shieldIP ,subnetMask,gatewayIP;
+uint8_t rssi;
+uint8_t networkId;
+byte macAddr[6];
+byte encryptionType;
+
+char ssid[]="";
+
+WiFiClient wclient;
+
+byte server[]={198 , 41, 30, 241};
+
+PubSubClient client(server , 1883 , callback , wclient);
+
+char *jsonPayload;
+void setup() {
+
+    Serial.begin(115200);
+    Serial.print("Connecting to WiFi....");
+
+    while(WiFi.begin(ssid)!=WL_CONNECTED)
+    {
+        Serial.print(".");
+        delay(1);
+    }
+
+    Serial.println("");
+    Serial.println("WiFi connected , Fetching WiFi shield's IP Address");
+
+    while(WiFi.localIP()==INADDR_NONE)
+    {
+        Serial.print(".");
+        delay(1);
+    }
+    shieldIP=WiFi.localIP();
+    Serial.println(ssid);
+
+    Serial.print("Access point name: ");
+    Serial.println(ssid);
+
+    Serial.print("Signal strength");
+    rssi=WiFi.RSSI();
+    Serial.println(rssi);
+
+    uint8_t networkId = WiFi.scanNetworks();
+    Serial.print("Number of access points in range");
+    Serial.println(networkId);
+
+    for(int i = 1;i<=networkId ; i++){
+        Serial.print("Name of access points and encryption type:");
+        Serial.print(WiFi.SSID(i));
+        Serial.print(",");
+        encryptionType = WiFi.encryptionType(i);
+        Serial.println(encryptionType , DEC );
+    }
+
+    subnetMask = WiFi.subnetMask();
+    Serial.print("Subnetmask:");
+    Serial.println(subnetMask);
+
+    gatewayIP = WiFi.gatewayIP();
+    Serial.print("Gateway IP adress : ");
+    Serial.println(gatewayIP);
+
+    WiFi.macAddress(macAddr);
+    Serial.print(" Mac address of shield:");
+    for(int i=0; i<6;i++)
+    {
+        Serial.print(macAddr[i],HEX);
+        if(i<=4)
+        Serial.print(" : ");
+        else
+        Serial.println();
+    }
+
+    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2);
+       GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P4,GPIO_PIN7,GPIO_TERTIARY_MODULE_FUNCTION);
+       ADC14_initModule(ADC_CLOCKSOURCE_MCLK , ADC_PREDIVIDER_1 , ADC_PREDIVIDER_1,ADC_NOROUTE);
+       ADC14_configureSingleSampleMode(ADC_MEM6 , true);
+       ADC14_configureConversionMemory(ADC_MEM6 , ADC_VREFPOS_AVCC_VREFNEG_VSS , ADC_INPUT_A6 , false);
+       ADC14_setSampleHoldTime(ADC_PULSE_WIDTH_32 , ADC_PULSE_WIDTH_4);
+       ADC14_setResolution(ADC_12BIT);
+       ADC14_enableSampleTimer(ADC_AUTOMATIC_ITERATION);
+       ADC14_enableModule();
+       ADC14_enableConversion();
+       ADC14_toggleConversionTrigger();
+
+
+    // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+    if(!client.connected())
+    {
+        Serial.println("Disconnecting:Reconnecting..");
+        if(!client.connect("Msp432"))
+        {
+            Serial.println("connection failed");
+        }
+        else
+        {
+            Serial.println("Connection success");
+            if(client.subscribe("onHighVolts"))
+            {
+                Serial.println("Subscription successfull");
+            }
+        }
+    }
+
+    int result,regressedData1;
+
+        float regressedData;
+
+        while(!ADC14_isBusy());
+        result=ADC14_getResult(ADC_MEM6);
+
+        ADC14_toggleConversionTrigger();
+
+        regressedData = ((result*7.943217)-6.76323)/10000;
+        Serial.println(regressedData);
+
+        regressedData1  = ((result*7.943217)-6.76323)/10;
+        P2->OUT = result>>8;
+
+        String str = (String)regressedData1;
+        int str_len = str.length() + 2;
+
+        char char_array[str_len];
+        str.toCharArray(char_array , str_len);
+        char pot_reading[str_len];
+
+        if(regressedData<1)
+        {
+            pot_reading[0]='0';
+            pot_reading[1]='.';
+            for(int i=2;i<str_len;i++)
+            {
+                pot_reading[i]=char_array[i-2];
+            }
+        }
+            else
+            {
+                pot_reading[0]=char_array[0];
+                pot_reading[1]='.';
+                for(int i=2;i<str_len;i++)
+                {
+                    pot_reading[i]=char_array[i-1];
+                }
+            }
+
+
+        aJsonObject *root  = aJson.createObject();
+        aJsonObject *d=aJson.createObject();
+        aJson.addItemToObject(root, "d", d);
+        aJson.addStringToObject(d, "IbmCloudPot", "MSP432");
+
+        aJson.addStringToObject(d, "PotValue", pot_reading);
+        jsonPayload=aJson.print(root)+'\0';
+
+        aJson.deleteItem(d);
+        aJson.deleteItem(root);
+
+        client.publish("sensorPot",jsonPayload);
+
+        client.poll();
+        delay(1000);
+}
+
+void callback(char* inTopic,byte*payload, unsigned int length)
+{
+    Serial.print("message arrived on topic:");
+    Serial.print(inTopic);
+    Serial.print(".Message: ");
+    String arrivedMessage;
+
+    for(int i=0;i<length;i++)
+    {
+        Serial.print((char)(payload[i]));
+        arrivedMessage+=(char)payload[i];
+    }
+
+    Serial.println();
+
+  }
