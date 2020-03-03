@@ -28,7 +28,21 @@
 #endif
 #include <WiFi.h>
 #define DEBUG
+#define NOT_FULL 0
+#define FULL 1
 
+#define HVAC_PIN 3
+#define PSEN_PIN_1 6
+#define PSEN_PIN_2 24
+#define ADC_RES 4096e0
+#define PIN_VOLT(x) (1.5*x/ADC_RES)
+#define PRES_THOLD_VOLT (5e-1)
+
+
+double Psen_val_1 = 0;
+double Psen_val_2 = 0;
+
+bool Cartridge_status = NOT_FULL;
 // your network name also called SSID
 char ssid[] = "JioFi3_697A78";
 // your network password
@@ -40,7 +54,10 @@ WiFiServer server(80);
 
 void setup() {
   Serial.begin(115200);      // initialize serial communication
-  pinMode(RED_LED, OUTPUT);      // set the LED pin mode
+  pinMode(HVAC_PIN, OUTPUT);      // set the LED pin mode
+  pinMode(PSEN_PIN_1, INPUT);      // set the LED pin mode
+  pinMode(PSEN_PIN_2, INPUT);      // set the LED pin mode
+
 
   // attempt to connect to Wifi network:
   Serial.print("Attempting to connect to Network named: ");
@@ -71,9 +88,18 @@ void setup() {
   Serial.println("Starting webserver on port 80");
   server.begin();                           // start the web server on port 80
   Serial.println("Webserver started!");
+  
+  Serial.println("Init System");
+
+
 }
 
 void loop() {
+
+  //Psen_val_1 = (analogRead(PSEN_PIN_1));
+  //Psen_val_2 = (analogRead(PSEN_PIN_2));
+        
+
   int i = 0;
   WiFiClient client = server.available();   // listen for incoming clients
 
@@ -157,8 +183,8 @@ void loop() {
             client.println("      <h1>InKarbon</h1>");
             client.println("      <h2>Welcome to CC3200 WiFi Web Server</h1>");
             client.println("        <br><br>");
-            client.println("      <button onclick=\"location.href='/H'\">HIGH</button>");
-            client.println("      <button onclick=\"location.href='/L'\">LOW</button>");
+            client.println("      <button onclick=\"location.href='/H'\">Manual ON</button>");
+            client.println("      <button onclick=\"location.href='/L'\">Manual OFF</button>");
             client.println("    </div>");
             client.println("  </div>");
             client.println("</body>");
@@ -180,12 +206,33 @@ void loop() {
         }
 
         // Check to see if the client request was "GET /H" or "GET /L":
-        if (endsWith(buffer, "GET /H")) {
-          digitalWrite(RED_LED, HIGH);               // GET /H turns the LED on
+        if(Cartridge_status == NOT_FULL){
+          if (endsWith(buffer, "GET /H")) {
+          digitalWrite(HVAC_PIN, HIGH);               // GET /H turns the LED on
         }
         if (endsWith(buffer, "GET /L")) {
-          digitalWrite(RED_LED, LOW);                // GET /L turns the LED off
+          digitalWrite(HVAC_PIN, LOW);                // GET /L turns the LED off
         }
+
+        }
+        
+        Psen_val_1 = PIN_VOLT(analogRead(PSEN_PIN_1));
+        Psen_val_2 = PIN_VOLT(analogRead(PSEN_PIN_2));
+        Serial.print("PIN 1 Voltage   ");
+        Serial.print(Psen_val_1);
+        Serial.print("      PIN 2 Voltage  ");
+        Serial.println(Psen_val_2);
+        
+        
+
+
+        /*@sahil please find a way to print this in the web GUI*/
+        if((Psen_val_1 - Psen_val_2 ) > PRES_THOLD_VOLT){
+          Serial.println("Cartridge nearly full, please replace, HVAC turned OFF");
+          digitalWrite(HVAC_PIN, LOW);         
+          Cartridge_status = FULL;
+        }
+
       }
     }
     // close the connection:

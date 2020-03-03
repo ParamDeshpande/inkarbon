@@ -9,3 +9,19 @@ finalised components for differential air sensor and boost converter(for the MVP
 22/02/20
 7.48 PM 
 Added code for IOT part, ref only.
+
+01/03/20
+Soldered the POWER supply BOARD. 
+
+02/03/20
+tested the GPB.
+
+03/03/20
+11.59 PM
+Resoldered the entire board for the power SUPPLY added the relay MODULE on it.
+Also tested the entire IOT part code for the WEB CHROME BROWSER.
+
+Whats Remaining ?? 
+1. BUY a newer BUCK converter, 
+2. Test it on the VEHICLE.
+
