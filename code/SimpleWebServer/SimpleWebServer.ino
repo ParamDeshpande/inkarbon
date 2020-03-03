@@ -27,6 +27,7 @@
 #include <SPI.h>
 #endif
 #include <WiFi.h>
+#define DEBUG
 
 // your network name also called SSID
 char ssid[] = "JioFi3_697A78";
@@ -99,6 +100,67 @@ void loop() {
             client.println("<h1 align=center><font color=\"red\">Welcome to the CC3200 WiFi Web Server</font></h1>");
             client.print("RED LED <button onclick=\"location.href='/H'\">HIGH</button>");
             client.println(" <button onclick=\"location.href='/L'\">LOW</button><br>");
+            #ifdef DEBUG 
+
+
+            client.println("<!DOCTYPE html>");
+            client.println("<html>");
+            client.println("<head>");
+            client.println("  <title>Energia CC3200 WiFi Web Server</title>");
+            client.println("  <style type="text/css">");
+ 
+            client.println("    body {");
+            client.println("      background-color: black;");
+            client.println("    }");
+ 
+            client.println("    div.transbox {");
+            client.println("      background-color: ffffff;");
+            client.println("      opacity: 0.9;");
+            client.println("      margin: 5%;");
+            client.println("      margin-top: 20px;");
+ 
+            client.println("    }");
+ 
+            client.println("    div.transbox h1,h2{");
+            client.println("      text-align: center;");
+            client.println("    }");
+ 
+ 
+            client.println("    .button {");
+            client.println("      background-color: black;");
+            client.println("      border: none;");
+            client.println("      color: white;");
+            client.println("      padding: 15px 32px;");
+            client.println("      text-align: center;");
+            client.println("      text-decoration: none;");
+            client.println("      display: inline-block;");
+            client.println("      font-size: 16px;");
+            client.println("      margin: 4px 2px;");
+            client.println("      cursor: pointer;");
+            client.println("      -webkit-transition-duration: 0.4s;");
+            client.println("      transition-duration: 0.4s;");
+            client.println("    }");
+ 
+            client.println("    .button1:hover {");
+            client.println("      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);");
+            client.println("      background-color: 555555;");
+            client.println("      color: white;");
+            client.println("    }");
+            client.println("  </style>");
+            client.println("</head>");
+            client.println("<body>");
+            client.println("  <div class="background">");
+            client.println("    <div class="transbox">");
+            client.println("      <h1>InKarbon</h1>");
+            client.println("      <h2>Welcome to CC3200 WiFi Web Server</h1>");
+            client.println("        <br><br>");
+            client.println("      <button class="button button1">High</button>");
+            client.println("      <button class="button button1">Low</button>");
+            client.println("    </div>");
+            client.println("  </div>");
+            client.println("</body>");
+            client.println("</html>");
+            #endif 
 
             // The HTTP response ends with another blank line:
             client.println();
