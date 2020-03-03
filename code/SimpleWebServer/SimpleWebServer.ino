@@ -95,11 +95,14 @@ void loop() {
             client.println("Content-type:text/html");
             client.println();
 
+            #ifndef DEBUG
             // the content of the HTTP response follows the header:
             client.println("<html><head><title>Energia CC3200 WiFi Web Server</title></head><body align=center>");
             client.println("<h1 align=center><font color=\"red\">Welcome to the CC3200 WiFi Web Server</font></h1>");
             client.print("RED LED <button onclick=\"location.href='/H'\">HIGH</button>");
             client.println(" <button onclick=\"location.href='/L'\">LOW</button><br>");
+            #endif
+            
             #ifdef DEBUG 
 
 
@@ -107,7 +110,7 @@ void loop() {
             client.println("<html>");
             client.println("<head>");
             client.println("  <title>Energia CC3200 WiFi Web Server</title>");
-            client.println("  <style type="text/css">");
+            client.println("  <style type=\"text/css\">");
  
             client.println("    body {");
             client.println("      background-color: black;");
@@ -149,13 +152,13 @@ void loop() {
             client.println("  </style>");
             client.println("</head>");
             client.println("<body>");
-            client.println("  <div class="background">");
-            client.println("    <div class="transbox">");
+            client.println("  <div class=\"background\">");
+            client.println("    <div class=\"transbox\">");
             client.println("      <h1>InKarbon</h1>");
             client.println("      <h2>Welcome to CC3200 WiFi Web Server</h1>");
             client.println("        <br><br>");
-            client.println("      <button class="button button1">High</button>");
-            client.println("      <button class="button button1">Low</button>");
+            client.println("      <button onclick=\"location.href='/H'\">HIGH</button>");
+            client.println("      <button onclick=\"location.href='/L'\">LOW</button>");
             client.println("    </div>");
             client.println("  </div>");
             client.println("</body>");
