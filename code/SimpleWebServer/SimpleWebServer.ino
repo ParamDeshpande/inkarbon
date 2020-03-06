@@ -27,7 +27,8 @@
 #include <SPI.h>
 #endif
 #include <WiFi.h>
-#define DEBUG
+#define DEBUG_VERSION_2
+
 #define NOT_FULL 0
 #define FULL 1
 
@@ -121,7 +122,7 @@ void loop() {
             client.println("Content-type:text/html");
             client.println();
 
-            #ifndef DEBUG
+            #ifdef DEFAULT
             // the content of the HTTP response follows the header:
             client.println("<html><head><title>Energia CC3200 WiFi Web Server</title></head><body align=center>");
             client.println("<h1 align=center><font color=\"red\">Welcome to the CC3200 WiFi Web Server</font></h1>");
@@ -183,6 +184,7 @@ void loop() {
             client.println("      <h1>InKarbon</h1>");
             client.println("      <h2>Welcome to CC3200 WiFi Web Server</h1>");
             client.println("        <br><br>");
+            
             client.println("      <button onclick=\"location.href='/H'\">Manual ON</button>");
             client.println("      <button onclick=\"location.href='/L'\">Manual OFF</button>");
             client.println("    </div>");
@@ -191,6 +193,87 @@ void loop() {
             client.println("</html>");
             #endif 
 
+
+            #ifdef DEBUG_VERSION_2
+                client.println("	<!DOCTYPE html>");
+                client.println("	<html>");
+                client.println("	<head>");
+                client.println("		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+                client.println("		<title>Energia CC3200 WiFi Web Server</title>");
+                client.println("		<style type=\"text/css\">");
+                client.println("			");
+                client.println("			body {");
+                client.println("			  background-color: black;");
+                client.println("			}");
+                client.println("	");
+                client.println("			div.transbox {");
+                client.println("			  background-color: #ffffff;");
+                client.println("			  opacity: 0.9;");
+                client.println("			  margin: 5%;");
+                client.println("			  margin-top: 20px;");
+                client.println("	");
+                client.println("			}");
+                client.println("	");
+                client.println("			div.transbox h1,h2{");
+                client.println("				text-align: center;");
+                client.println("			}");
+                client.println("	");
+                client.println("	");
+                client.println("			.button {");
+                client.println("			  background-color: black;");
+                client.println("			  border: none;");
+                client.println("			  color: white;");
+                client.println("			  padding: 15px 32px;");
+                client.println("			  text-align: center;");
+                client.println("			  text-decoration: none;");
+                client.println("			  display: inline-block;");
+                client.println("			  font-size: 16px;");
+                client.println("			  margin: 4px 2px;");
+                client.println("			  cursor: pointer;");
+                client.println("			  -webkit-transition-duration: 0.4s;");
+                client.println("			  transition-duration: 0.4s;");
+                client.println("			}");
+                client.println("			");
+                client.println("			.button1:hover {");
+                client.println("			  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);");
+                client.println("			  background-color: #555555;");
+                client.println("			  color: white;");
+                client.println("			}");
+                client.println("	");
+                client.println("			.button1:active {");
+                client.println("				background-color: grey;");
+                client.println("			}");
+                client.println("		");
+                client.println("			.red {");
+                client.println("				font-size: 25px;");
+                client.println("				text-align: center;");
+                client.println("			}");
+                client.println("			");
+                client.println("		</style>");
+                client.println("	</head>");
+                client.println("	<body>");
+                client.println("		<div class=\"background\">");
+                client.println("		  <div class=\"transbox\">");
+                client.println("		  	<h1>InKarbon</h1>");
+                client.println("		  	<hr>");
+                client.println("		  	<h2>Welcome to CC3200 WiFi Web Server</h1>");
+                client.println("		  		<br>");
+                client.println("		  	<div align=\"center\">");
+                client.println("		  		<p class=\"red\">Device:");
+                client.println("		  		<button onclick=\"location.href='/H'\">ON</button>");
+                client.println("		  		<button onclick=\"location.href='/L'\">OFF</button>");
+                client.println("		  		</p>");
+                client.println("		  	</div>");
+                client.println("		  	<br>");
+                client.println("		  	<div class=\"Cartridge\">");
+                client.println("		  		<p class=\"red\">Cartridge Status: CLEAN</p>");
+                //client.println("		  		<p class=\"red\">Cartridge Status: FULL</p>");
+                client.println("		  	</div>");
+                client.println("		  </div>");
+                client.println("		</div>");
+                client.println("	</body>");
+                client.println("	</html>");
+            #endif // DEBUG
             // The HTTP response ends with another blank line:
             client.println();
             // break out of the while loop:
